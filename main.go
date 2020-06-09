@@ -29,7 +29,7 @@ func main() {
 	sort.Sort(sort.Reverse(versionSlice(vers)))
 	ver := vers[0]
 	if *bump {
-		ver = ver.Bump()
+		ver = ver.Bump(time.Now())
 	}
 	fmt.Println(ver.String())
 }
@@ -71,8 +71,7 @@ func (v Version) String() string {
 	return fmt.Sprintf("v%d.%02d.%d", v.Major, v.Minor, v.Patch)
 }
 
-func (v Version) Bump() Version {
-	now := time.Now()
+func (v Version) Bump(now time.Time) Version {
 	major := Major(now.Year())
 	minor := Minor(now.Month())
 	patch := v.Patch

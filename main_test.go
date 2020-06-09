@@ -3,6 +3,7 @@ package main
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -26,5 +27,48 @@ v2020.02.1`))
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestVersionBump(t *testing.T) {
+	cases := []struct {
+		Now     time.Time
+		Version Version
+		Want    Version
+	}{
+		{
+			Now: time.Date(2020, 3, 4, 0, 0, 0, 0, time.Local),
+			Version: Version{
+				Major(2020),
+				Minor(3),
+				Patch(2),
+			},
+			Want: Version{
+				Major(2020),
+				Minor(3),
+				Patch(3),
+			},
+		},
+		{
+			Now: time.Date(2020, 3, 4, 0, 0, 0, 0, time.Local),
+			Version: Version{
+				Major(2020),
+				Minor(2),
+				Patch(3),
+			},
+			Want: Version{
+				Major(2020),
+				Minor(3),
+				Patch(1),
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run("", func(t *testing.T) {
+			got := tc.Version.Bump(tc.Now)
+			if diff := cmp.Diff(tc.Want, got); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
 }
