@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -11,9 +12,13 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
+	bump := flag.Bool("bump", false, "bump patch")
+	flag.Parse()
+
 	vers, err := Scan()
 	if err != nil {
 		log.Fatal(err)
@@ -22,7 +27,11 @@ func main() {
 		return
 	}
 	sort.Sort(sort.Reverse(versionSlice(vers)))
-	fmt.Println(vers[0].String())
+	ver := vers[0]
+	if *bump {
+		ver = ver.Bump()
+	}
+	fmt.Println(ver.String())
 }
 
 type versionSlice []Version
@@ -60,6 +69,23 @@ type Version struct {
 
 func (v Version) String() string {
 	return fmt.Sprintf("v%d.%02d.%d", v.Major, v.Minor, v.Patch)
+}
+
+func (v Version) Bump() Version {
+	now := time.Now()
+	major := Major(now.Year())
+	minor := Minor(now.Month())
+	patch := v.Patch
+	if minor > v.Minor {
+		patch = 1
+	} else {
+		patch++
+	}
+	return Version{
+		Major: major,
+		Minor: minor,
+		Patch: patch,
+	}
 }
 
 func Scan() ([]Version, error) {
