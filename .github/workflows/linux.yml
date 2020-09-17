@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Run tests on linux
-      run: go test -v -race -cover -covermode=atomic -coverprofile=cover.txt .
+      run: go test -v -race -cover -covermode=atomic -coverprofile=cover.txt ./...
 
     - name: Upload coverage report to codecov.io
       uses: codecov/codecov-action@v1
