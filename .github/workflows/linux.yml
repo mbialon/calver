@@ -20,13 +20,13 @@ jobs:
         go-version: 1.15
 
     - name: Check out code
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2
 
     - name: Run tests on linux
       run: go test -v -race -cover -covermode=atomic -coverprofile=cover.txt ./...
 
     - name: Upload coverage report to codecov.io
-      uses: codecov/codecov-action@v2.0.1
+      uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./cover.txt
